@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import Design from "../../assets/Design.jpg";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import withAuthRedirect from "./withAuthRedirect";
 
 const theme = createTheme();
 
@@ -252,4 +253,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default withAuthRedirect(Login);

@@ -28,7 +28,6 @@ const ActivateAccount = () => {
 
   const [alertInfo, setAlertInfo] = useState({ type: "", message: "" });
 
-
   useEffect(() => {
     if (error) {
       setAlertInfo({ type: "error", message: error });
@@ -38,26 +37,18 @@ const ActivateAccount = () => {
     }
   }, [error]);
 
+  useEffect(() => {
+    if (activated) {
+      setAlertInfo({ type: "success", message: "Account activated successfully!" });
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
+    }
+  }, [activated, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try{
-      await dispatch(activateAccount(uid, token))
-      if (activated) {
-        setAlertInfo({ type: "success", message: "Account activated successfully!" });
-        setTimeout(() => {
-          navigate("/");
-        }, 3000);
-      }
-    }catch(err){
-      if (err.response && err.response.data){
-        const { detail, message } = err.response.data;
-        if (detail) {
-          setAlertInfo({ type: 'error', message: detail[0] });
-        } 
-      }
-    }
-    
-
+    dispatch(activateAccount(uid, token));
   };
 
   return (
