@@ -1,3 +1,4 @@
+// actions/authActions.js
 import axios from 'axios';
 import { base_url } from '../config';
 
@@ -45,14 +46,11 @@ export const login = (email, password) => async (dispatch) => {
     const response = await axios.post(`${base_url}accounts/jwt/create/`, { email, password });
     const token = response.data.access;
     localStorage.setItem('token', token);
-    // Dispatch login success action with the token
     dispatch(loginSuccess(token));
   } catch (error) {
-    // Dispatch login failure action with the error message
     dispatch(loginFailure(error.message));
   }
 };
-
 
 // Redux actions for sign up
 
@@ -76,10 +74,9 @@ export const signup = (email, username, password, re_password) => async (dispatc
     dispatch(signupSuccess());
   } catch (error) {
     dispatch(signupFailure(error.message));
-    throw error; // Rethrow the error so it can be caught in the component
+    throw error;
   }
 };
-
 
 // Redux activations actions
 export const activateAccountRequest = () => ({
@@ -95,11 +92,10 @@ export const activateAccountFailure = (error) => ({
   payload: error,
 });
 
-// Thunk Action
 export const activateAccount = (uid, token) => async (dispatch) => {
   dispatch(activateAccountRequest());
   try {
-    const response = await axios.post(`${base_url}accounts/users/activation/`, { uid, token });
+    await axios.post(`${base_url}accounts/users/activation/`, { uid, token });
     dispatch(activateAccountSuccess());
   } catch (error) {
     const errorMsg = error.response && error.response.data ? error.response.data.detail : error.message;

@@ -1,10 +1,16 @@
 
-
+// rootReducer.js
 import { combineReducers } from 'redux';
-import counter from './counter'
-import authReducer from './authReducer';
+import { 
+  loginReducer, 
+  signupReducer, 
+  activationReducer 
+} from './authReducer';
 
-export default combineReducers({
-  counter,
-  auth: authReducer,
+const rootReducer = combineReducers({
+  login: loginReducer,
+  signup: signupReducer,
+  activation: activationReducer,
 });
+
+export default rootReducer;

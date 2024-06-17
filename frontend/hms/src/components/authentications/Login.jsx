@@ -38,7 +38,7 @@ const Login = () => {
   const [alertInfo, setAlertInfo] = useState({ type: "", message: "" });
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
-  const { loading, error, token } = useSelector((state) => state.auth);
+  const { loading, error, token } = useSelector((state) => state.login);
   const navigate = useNavigate();
 
   useEffect(() => {
