@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import environ, os
 from datetime import timedelta
+import logging
+from logging.handlers import RotatingFileHandler
+from django.utils.log import AdminEmailHandler
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -46,6 +49,7 @@ INSTALLED_APPS = [
     
     # apps
     'accounts',
+    'patients',
     
     # 3rd party
     'rest_framework',
@@ -203,3 +207,62 @@ EMAIL_HOST_USER = "yengsebastian1@gmail.com"
 EMAIL_HOST_PASSWORD = "hsseoancvttusojc"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+
+
+
+# SYSTEM PERFORMANCE
+
+# # Define BASE_DIR
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# # Logging configuration
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {module} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'handlers': {
+#         'file_debug': {
+#             'level': 'DEBUG',
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
+#             'maxBytes': 1024*1024*5,  # 5 MB
+#             'backupCount': 3,
+#             'formatter': 'verbose',
+#         },
+#         'file_info': {
+#             'level': 'INFO',
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs/info.log'),
+#             'maxBytes': 1024*1024*5,  # 5 MB
+#             'backupCount': 3,
+#             'formatter': 'verbose',
+#         },
+#         'file_critical': {
+#             'level': 'CRITICAL',
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs/critical.log'),
+#             'maxBytes': 1024*1024*5,  # 5 MB
+#             'backupCount': 3,
+#             'formatter': 'verbose',
+#         },
+#         'mail_admins': {
+#             'level': 'ERROR',
+#             'class': 'django.utils.log.AdminEmailHandler',
+#             'formatter': 'verbose',
+#             'include_html': True,
+#         },
+#     },
+#     'loggers': {
+#         'my_django_monitor': {
+#             'handlers': ['file_debug', 'file_info', 'file_critical', 'mail_admins'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     },
+# }
