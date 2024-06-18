@@ -14,9 +14,12 @@ from pathlib import Path
 import environ, os
 from datetime import timedelta
 import logging
+import base64
 from logging.handlers import RotatingFileHandler
 from django.utils.log import AdminEmailHandler
 
+key = base64.urlsafe_b64encode(os.urandom(32))
+# print(key.decode())
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,6 +33,7 @@ env = environ.Env()
 # SECRET_KEY = env.bool('SECRET_KEY', False)
 SECRET_KEY = 'django-insecure-wjw8f9-i##2g5a(-umk2+b)9em&63-39$d#-&t*%(b99^_e@d9'
 
+FIELD_ENCRYPTION_KEY = 'QVzQSaQ1JHBcL5h46spD4RnfQB2NO4VBdfC7XHEtOXs='
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -100,13 +104,24 @@ WSGI_APPLICATION = 'djact.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-DATABASES = {
+if DEBUG:
+    DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'hms_database',
+        'USER': 'hms_database_user',
+        'PASSWORD': 'Hms12345$',
+        'HOST': 'localhost',  # Or the address of your database server
+        'PORT': '5432',       # Default PostgreSQL port
     }
 }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation

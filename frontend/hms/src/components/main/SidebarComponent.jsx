@@ -11,6 +11,11 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import { Typography } from '@mui/material';
 
 const drawerWidth = 240;
 
@@ -24,6 +29,25 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const SidebarComponent = ({ open, handleDrawerClose }) => {
   const theme = useTheme();
+
+  const menuItems = [
+    {
+      category: 'Patient',
+      items: ['Patient List', 'Add Patient', 'Patient Records'],
+    },
+    {
+      category: 'Doctor',
+      items: ['Doctor List', 'Add Doctor', 'Doctor Schedule'],
+    },
+    {
+      category: 'Appointment',
+      items: ['Schedule Appointment', 'View Appointments'],
+    },
+    {
+      category: 'Laboratory',
+      items: ['Lab Tests', 'Add Lab Test', 'Lab Results'],
+    },
+  ];
 
   return (
     <Drawer
@@ -48,24 +72,28 @@ const SidebarComponent = ({ open, handleDrawerClose }) => {
       </DrawerHeader>
       <Divider sx={{ borderColor: '#fff' }} />
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon sx={{ color: '#fff' }}>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider sx={{ borderColor: '#fff' }} />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon sx={{ color: '#fff' }}>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
+        {menuItems.map((menu) => (
+          <Accordion key={menu.category} sx={{ backgroundColor: '#3f51b5', color: '#fff' }}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon sx={{ color: '#fff' }} />}
+              aria-controls={`${menu.category}-content`}
+              id={`${menu.category}-header`}
+            >
+              <Typography>{menu.category}</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <List>
+                {menu.items.map((text) => (
+                  <ListItem button key={text}>
+                    <ListItemIcon sx={{ color: '#fff' }}>
+                      {text.includes('Patient') ? <InboxIcon /> : <MailIcon />}
+                    </ListItemIcon>
+                    <ListItemText primary={text} />
+                  </ListItem>
+                ))}
+              </List>
+            </AccordionDetails>
+          </Accordion>
         ))}
       </List>
     </Drawer>

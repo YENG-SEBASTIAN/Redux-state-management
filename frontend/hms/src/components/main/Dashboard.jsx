@@ -4,6 +4,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 import AppBarComponent from './AppBarComponent';
 import SidebarComponent from './SidebarComponent';
+import PatientOverviewCard from '../patients/PatientOverviewCard';
+import AppointmentScheduleCard from '../patients/AppointmentScheduleCard';
+import HealthMetricsCard from '../patients/HealthMetricsCard';
 
 const drawerWidth = 240;
 
@@ -56,6 +59,11 @@ const Dashboard = () => {
           <Typography paragraph>
             Welcome to the Dashboard! Select an item from the side menu.
           </Typography>
+          {/* Example Cards and Components */}
+          <PatientOverviewCard />
+          <AppointmentScheduleCard />
+          <HealthMetricsCard />
+          {/* Add more cards and components as needed */}
         </Main>
       </div>
     </React.Fragment>

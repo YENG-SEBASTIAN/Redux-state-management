@@ -2,21 +2,22 @@
 import axios from 'axios';
 import { base_url } from '../config';
 
-// login
+// Action types
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAILURE = 'LOGIN_FAILURE';
 export const LOGOUT = 'LOGOUT';
 
-// signup
 export const SIGNUP_REQUEST = 'SIGNUP_REQUEST';
 export const SIGNUP_SUCCESS = 'SIGNUP_SUCCESS';
 export const SIGNUP_FAILURE = 'SIGNUP_FAILURE';
 
-// activation
 export const ACTIVATE_ACCOUNT_REQUEST = 'ACTIVATE_ACCOUNT_REQUEST';
 export const ACTIVATE_ACCOUNT_SUCCESS = 'ACTIVATE_ACCOUNT_SUCCESS';
 export const ACTIVATE_ACCOUNT_FAILURE = 'ACTIVATE_ACCOUNT_FAILURE';
+
+export const USER_LOADED_SUCCESS = 'USER_LOADED_SUCCESS';
+export const USER_LOADED_FAIL = 'USER_LOADED_FAIL';
 
 // Redux login actions
 const loginRequest = () => ({
@@ -35,6 +36,7 @@ const loginFailure = (error) => ({
 
 export const logout = () => {
   localStorage.removeItem('token');
+  localStorage.removeItem('user');
   return {
     type: LOGOUT,
   };
@@ -47,13 +49,13 @@ export const login = (email, password) => async (dispatch) => {
     const token = response.data.access;
     localStorage.setItem('token', token);
     dispatch(loginSuccess(token));
+    await dispatch(loadUser(token)); // Call loadUser after successful login
   } catch (error) {
     dispatch(loginFailure(error.message));
   }
 };
 
 // Redux actions for sign up
-
 const signupRequest = () => ({
   type: SIGNUP_REQUEST,
 });
@@ -100,5 +102,35 @@ export const activateAccount = (uid, token) => async (dispatch) => {
   } catch (error) {
     const errorMsg = error.response && error.response.data ? error.response.data.detail : error.message;
     dispatch(activateAccountFailure(errorMsg));
+  }
+};
+
+// Load user action
+export const loadUser = (token) => async (dispatch) => {
+  if (token) {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        accept: 'application/json',
+      },
+    };
+
+    try {
+      const res = await axios.get(`${base_url}accounts/users/me/`, config);
+      localStorage.setItem('user', JSON.stringify(res.data)); // Save user data to local storage
+      dispatch({
+        type: USER_LOADED_SUCCESS,
+        payload: res.data,
+      });
+    } catch (err) {
+      dispatch({
+        type: USER_LOADED_FAIL,
+      });
+    }
+  } else {
+    dispatch({
+      type: USER_LOADED_FAIL,
+    });
   }
 };
