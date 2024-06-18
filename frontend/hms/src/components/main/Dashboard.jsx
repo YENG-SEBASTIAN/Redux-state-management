@@ -1,12 +1,11 @@
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import Typography from '@mui/material/Typography';
 import AppBarComponent from './AppBarComponent';
 import SidebarComponent from './SidebarComponent';
-import PatientOverviewCard from '../patients/PatientOverviewCard';
 import AppointmentScheduleCard from '../patients/AppointmentScheduleCard';
 import HealthMetricsCard from '../patients/HealthMetricsCard';
+import MainDashboard from './MainDashboard';
 
 const drawerWidth = 240;
 
@@ -38,7 +37,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 const Dashboard = () => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -56,14 +55,10 @@ const Dashboard = () => {
         <SidebarComponent open={open} handleDrawerClose={handleDrawerClose} />
         <Main open={open}>
           <DrawerHeader />
-          <Typography paragraph>
-            Welcome to the Dashboard! Select an item from the side menu.
-          </Typography>
+
           {/* Example Cards and Components */}
-          <PatientOverviewCard />
-          <AppointmentScheduleCard />
-          <HealthMetricsCard />
-          {/* Add more cards and components as needed */}
+          <MainDashboard />
+
         </Main>
       </div>
     </React.Fragment>

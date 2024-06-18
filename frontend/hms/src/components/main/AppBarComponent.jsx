@@ -1,5 +1,4 @@
-// components/AppBarComponent.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -40,8 +39,17 @@ const AppBarComponent = ({ open, handleDrawerOpen }) => {
   const [alertOpen, setAlertOpen] = useState(false); // State for showing the alert
   const [alertMessage, setAlertMessage] = useState(''); // Message for the alert
   const [alertSeverity, setAlertSeverity] = useState('success'); // Severity of the alert
+  const [user, setUser] = useState(''); // State for storing username
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // Fetch username from localStorage on component mount
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('user');
+    if (storedUsername) {
+      setUser(storedUsername);
+    }
+  }, []);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -82,7 +90,10 @@ const AppBarComponent = ({ open, handleDrawerOpen }) => {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Dashboard
           </Typography>
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="body1" sx={{ mr: 1 }}>
+              {user.username}
+            </Typography>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
