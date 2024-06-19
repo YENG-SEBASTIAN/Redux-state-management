@@ -39,7 +39,7 @@ const Login = () => {
   const [alertInfo, setAlertInfo] = useState({ type: "", message: "" });
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
-  const { loading, error, token } = useSelector((state) => state.login);
+  const { loading, error, token } = useSelector((state) => state.auth.login);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -159,6 +159,7 @@ const Login = () => {
               alignItems: "center",
               width: "80%",
               maxWidth: "400px",
+              justifyContent: "center"
             }}
           >
             <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
@@ -235,7 +236,7 @@ const Login = () => {
               </Button>
               <Grid container>
                 <Grid item xs>
-                  <Link href="#" variant="body2">
+                  <Link href="/reset-password" variant="body2">
                     Forgot password?
                   </Link>
                 </Grid>

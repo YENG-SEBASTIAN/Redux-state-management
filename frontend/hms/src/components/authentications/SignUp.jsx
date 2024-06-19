@@ -41,7 +41,7 @@ const Signup = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertInfo, setAlertInfo] = useState({ type: '', message: '' });
   const dispatch = useDispatch();
-  const { loading, error } = useSelector((state) => state.signup);
+  const { loading, error } = useSelector((state) => state.auth.signup);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {

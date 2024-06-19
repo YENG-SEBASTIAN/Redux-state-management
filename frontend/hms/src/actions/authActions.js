@@ -19,6 +19,11 @@ export const ACTIVATE_ACCOUNT_FAILURE = 'ACTIVATE_ACCOUNT_FAILURE';
 export const USER_LOADED_SUCCESS = 'USER_LOADED_SUCCESS';
 export const USER_LOADED_FAIL = 'USER_LOADED_FAIL';
 
+export const PASSWORD_RESET_REQUEST = 'PASSWORD_RESET_REQUEST';
+export const PASSWORD_RESET_SUCCESS = 'PASSWORD_RESET_SUCCESS';
+export const PASSWORD_RESET_FAILURE = 'PASSWORD_RESET_FAILURE';
+
+
 // Redux login actions
 const loginRequest = () => ({
   type: LOGIN_REQUEST,
@@ -132,5 +137,31 @@ export const loadUser = (token) => async (dispatch) => {
     dispatch({
       type: USER_LOADED_FAIL,
     });
+  }
+};
+
+
+// password reset
+const passwordResetRequest = () => ({
+  type: PASSWORD_RESET_REQUEST,
+});
+
+const passwordResetSuccess = () => ({
+  type: PASSWORD_RESET_SUCCESS,
+});
+
+const passwordResetFailure = (error) => ({
+  type: PASSWORD_RESET_FAILURE,
+  payload: error,
+});
+
+export const resetPassword = (email) => async (dispatch) => {
+  dispatch(passwordResetRequest());
+  try {
+    await axios.post(`${base_url}accounts/users/reset_password/`, { email });
+    dispatch(passwordResetSuccess());
+  } catch (error) {
+    const errorMsg = error.response && error.response.data ? error.response.data.detail : error.message;
+    dispatch(passwordResetFailure(errorMsg));
   }
 };
