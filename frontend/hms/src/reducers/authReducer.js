@@ -1,4 +1,3 @@
-// reducers/authReducer.js
 import {
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
@@ -15,6 +14,9 @@ import {
   PASSWORD_RESET_REQUEST,
   PASSWORD_RESET_SUCCESS,
   PASSWORD_RESET_FAILURE,
+  PASSWORD_RESET_CONFIRM_REQUEST,
+  PASSWORD_RESET_CONFIRM_SUCCESS,
+  PASSWORD_RESET_CONFIRM_FAILURE,
 } from '../actions/authActions';
 
 // Initial states
@@ -48,7 +50,11 @@ const initialPasswordResetState = {
   error: null,
 };
 
-
+const initialPasswordResetConfirmState = {
+  loading: false,
+  success: false,
+  error: null,
+};
 
 // Reducers
 export const loginReducer = (state = initialLoginState, action) => {
@@ -155,23 +161,49 @@ export const userReducer = (state = initialUserState, action) => {
 export const passwordResetReducer = (state = initialPasswordResetState, action) => {
   switch (action.type) {
     case PASSWORD_RESET_REQUEST:
-      return { 
-        ...state, 
-        loading: true, 
-        error: null 
+      return {
+        ...state,
+        loading: true,
+        error: null,
       };
     case PASSWORD_RESET_SUCCESS:
-      return { 
-        ...state, 
-        loading: false, 
-        success: true, 
-        error: null 
+      return {
+        ...state,
+        loading: false,
+        success: true,
+        error: null,
       };
     case PASSWORD_RESET_FAILURE:
-      return { 
-        ...state, 
-        loading: false, 
-        error: action.payload 
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
+export const passwordResetConfirmReducer = (state = initialPasswordResetConfirmState, action) => {
+  switch (action.type) {
+    case PASSWORD_RESET_CONFIRM_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+    case PASSWORD_RESET_CONFIRM_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        success: true,
+        error: null,
+      };
+    case PASSWORD_RESET_CONFIRM_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
       };
     default:
       return state;
@@ -186,5 +218,6 @@ export const authenticationReducer = (state = {}, action) => {
     activation: activationReducer(state.activation, action),
     user: userReducer(state.user, action),
     passwordReset: passwordResetReducer(state.passwordReset, action),
+    passwordResetConfirm: passwordResetConfirmReducer(state.passwordResetConfirm, action), // Add passwordResetConfirm reducer
   };
 };

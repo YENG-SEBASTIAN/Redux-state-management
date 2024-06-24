@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
-import Slide from "@mui/material/Slide";
+import Slide from '@mui/material/Slide';
 import AlertTitle from '@mui/material/AlertTitle';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -53,11 +53,17 @@ const Signup = () => {
           'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one numeric digit, and one special character.',
       });
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
       return;
     }
     if (password !== rePassword) {
       setAlertInfo({ type: 'error', message: "Passwords don't match" });
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
       return;
     }
   
@@ -94,7 +100,6 @@ const Signup = () => {
       }, 5000); // Hide alert after 5 seconds
     }
   };
-  
 
   const validatePassword = (password) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -156,16 +161,31 @@ const Signup = () => {
             </Slide>
           </Box>
         </Grid>
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        <Grid
+          item 
+          xs={12} 
+          sm={8} 
+          md={5} 
+          component={Paper} 
+          elevation={6} 
+          square 
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <Box
             sx={{
               my: 8,
               mx: 4,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              width: '80%',
-              maxWidth: '400px',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+              maxWidth: "80%",
+              width: "500px", // Reduced width
             }}
           >
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
@@ -174,20 +194,7 @@ const Signup = () => {
             <Typography component="h1" variant="h5">
               Sign Up
             </Typography>
-            {showAlert && (
-              <Alert
-                variant="filled"
-                severity={alertInfo.type}
-                onClose={() => setShowAlert(false)}
-                sx={{ width: "100%", mb: 2 }}
-              >
-                <AlertTitle>
-                  {alertInfo.type === "error" ? "Error" : "Success"}
-                </AlertTitle>
-                {alertInfo.message}
-              </Alert>
-            )}
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, width: '100%' }}>
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
               <TextField
                 margin="normal"
                 required
@@ -199,7 +206,6 @@ const Signup = () => {
                 autoFocus
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                sx={{ mb: 2 }}
               />
               <TextField
                 margin="normal"
@@ -211,7 +217,6 @@ const Signup = () => {
                 autoComplete="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                sx={{ mb: 2 }}
               />
               <TextField
                 margin="normal"
@@ -224,11 +229,10 @@ const Signup = () => {
                 autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                sx={{ mb: 2 }}
                 InputProps={{
                   endAdornment: (
                     <Button onClick={() => togglePasswordVisibility('password')}>
-                      {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
                     </Button>
                   ),
                 }}
@@ -244,11 +248,10 @@ const Signup = () => {
                 autoComplete="new-password"
                 value={rePassword}
                 onChange={(e) => setRePassword(e.target.value)}
-                sx={{ mb: 2 }}
                 InputProps={{
                   endAdornment: (
                     <Button onClick={() => togglePasswordVisibility('rePassword')}>
-                      {showRePassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      {showRePassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
                     </Button>
                   ),
                 }}
@@ -265,13 +268,26 @@ const Signup = () => {
               <Grid container justifyContent="flex-end">
                 <Grid item>
                   <Link href="/" variant="body2">
-                    Already have an account? Sign in
+                    Already have an account? Log In
                   </Link>
                 </Grid>
               </Grid>
             </Box>
           </Box>
         </Grid>
+        {showAlert && (
+          <Alert
+            variant="filled"
+            severity={alertInfo.type}
+            onClose={() => setShowAlert(false)}
+            sx={{ position: 'absolute', top: 20, right: 20, width: '300px', zIndex: 9999 }}
+          >
+            <AlertTitle>
+              {alertInfo.type === "error" ? "Error" : "Success"}
+            </AlertTitle>
+            {alertInfo.message}
+          </Alert>
+        )}
       </Grid>
     </ThemeProvider>
   );

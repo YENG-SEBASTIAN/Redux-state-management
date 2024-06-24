@@ -1,8 +1,35 @@
-# patients/models.py
 from django.db import models
 from accounts.models import User
-from django.contrib.postgres.fields import ArrayField
+from django.utils.crypto import get_random_string
+import string
 from encrypted_model_fields.fields import EncryptedTextField, EncryptedCharField
+
+
+class Registration(models.Model):
+    patient_id = models.CharField(max_length=8, primary_key=True, unique=True, editable=False, default=None)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    date_of_birth = models.DateField()
+    gender = models.CharField(max_length=10)
+    contact_number = models.CharField(max_length=15)
+    email = models.EmailField(max_length=100)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+    
+    @staticmethod
+    def generate_patient_id():
+        length = 8
+        while True:
+            unique_id = get_random_string(length, allowed_chars='0123456789')
+            if not Registration.objects.filter(patient_id=unique_id).exists():
+                return unique_id
+
+    def save(self, *args, **kwargs):
+        if not self.patient_id:
+            self.patient_id = self.generate_patient_id()
+        super().save(*args, **kwargs)
+
 
 class PatientProfile(models.Model):
     GENDER_CHOICES = [
@@ -19,21 +46,20 @@ class PatientProfile(models.Model):
         ('other', 'Other'),
     ]
 
-    patient_first_name = models.CharField(max_length=100)
-    patient_last_name = models.CharField(max_length=100)
-    address = EncryptedTextField()
-    phone_number = EncryptedCharField(max_length=15)
+    patient = models.OneToOneField(Registration, on_delete=models.CASCADE, related_name='profile')
+    address = models.CharField(max_length=200)
+    phone_number = models.CharField(max_length=15)
     date_of_birth = models.DateField()
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
-    emergency_contact_name = EncryptedCharField(max_length=255)
-    emergency_contact_phone = EncryptedCharField(max_length=15)
+    emergency_contact_name = models.CharField(max_length=255)
+    emergency_contact_phone = models.CharField(max_length=15)
     blood_type = models.CharField(max_length=3)
     marital_status = models.CharField(max_length=15, choices=MARITAL_STATUS_CHOICES)
-    insurance_provider = EncryptedCharField(max_length=100)
-    insurance_number = EncryptedCharField(max_length=50)
+    insurance_provider = models.CharField(max_length=100)
+    insurance_number = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"{self.patient_first_name} {self.patient_last_name}"
+        return f"{self.patient.first_name} {self.patient.last_name}"
 
 class MedicalHistory(models.Model):
     CONDITION_STATUS_CHOICES = [
@@ -45,11 +71,11 @@ class MedicalHistory(models.Model):
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='medical_histories')
     condition = models.CharField(max_length=255)
     date_diagnosed = models.DateField()
-    notes = models.TextField(blank=True, null=True)
+    notes = EncryptedTextField(blank=True, null=True)
     current_status = models.CharField(max_length=50, choices=CONDITION_STATUS_CHOICES)
 
     def __str__(self):
-        return f"{self.condition} ({self.patient.patient_first_name} {self.patient.patient_last_name})"
+        return f"{self.condition} ({self.patient.patient.first_name} {self.patient.patient.last_name})"
 
 class Allergy(models.Model):
     SEVERITY_CHOICES = [
@@ -64,7 +90,7 @@ class Allergy(models.Model):
     severity = models.CharField(max_length=50, choices=SEVERITY_CHOICES)
 
     def __str__(self):
-        return f"{self.allergen} ({self.patient.patient_first_name} {self.patient.patient_last_name})"
+        return f"{self.allergen} ({self.patient.patient.first_name} {self.patient.patient.last_name})"
 
 class Medication(models.Model):
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='medications')
@@ -77,4 +103,15 @@ class Medication(models.Model):
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.name} ({self.patient.patient_first_name} {self.patient.patient_last_name})"
+        return f"{self.name_of_medication} ({self.patient.patient.first_name} {self.patient.patient.last_name})"
+
+class Vitals(models.Model):
+    patient = models.ForeignKey(Registration, on_delete=models.CASCADE, related_name='vitals')
+    date_recorded = models.DateField()
+    temperature = models.DecimalField(max_digits=4, decimal_places=1)
+    blood_pressure = models.CharField(max_length=7)
+    heart_rate = models.IntegerField()
+    respiratory_rate = models.IntegerField()
+
+    def __str__(self):
+        return f"Vitals on {self.date_recorded} for {self.patient.first_name} {self.patient.last_name}"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,9 +14,11 @@ import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Slide from "@mui/material/Slide";
 import CircularProgress from "@mui/material/CircularProgress";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import AlertComponent from "../main/AlertComponent";
 import Design from "../../assets/Design.jpg";
-import { resetPassword } from "../../actions/authActions";
+import { passwordResetConfirm } from "../../actions/authActions";
 
 const theme = createTheme();
 
@@ -27,14 +29,20 @@ const carouselTexts = [
   "Join us for a healthier life.",
 ];
 
-const PasswordReset = () => {
-  const [email, setEmail] = useState("");
+const PasswordResetConfirm = () => {
+  const [password, setPassword] = useState("");
+  const [rePassword, setRePassword] = useState("");
   const [currentText, setCurrentText] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showRePassword, setShowRePassword] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertInfo, setAlertInfo] = useState({ type: "", message: "" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, success } = useSelector((state) => state.auth.passwordReset);
+  const { loading, error, success } = useSelector(
+    (state) => state.auth.passwordResetConfirm
+  );
+  const { uid, token } = useParams(); // Extracting uid and token from URL params
 
   useEffect(() => {
     const textIntervalId = setInterval(() => {
@@ -52,7 +60,10 @@ const PasswordReset = () => {
 
   useEffect(() => {
     if (success) {
-      handleAlert("success", "We have sent you an email. Kindly check and proceed.");
+      handleAlert(
+        "success",
+        "Password has been reset successfully. You can now login with your new password."
+      );
     }
   }, [success]);
 
@@ -60,41 +71,68 @@ const PasswordReset = () => {
     setAlertInfo({ type, message });
     setShowAlert(true);
 
-    if (type === "success") {
-      setTimeout(() => {
-        setShowAlert(false);
+    setTimeout(() => {
+      setShowAlert(false);
+      setAlertInfo({ type: "", message: "" });
+      if (type === "success") {
         navigate("/");
-      }, 5000);
-    } else {
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertInfo({ type: "", message: "" });
-      }, 5000);
-    }
+      }
+    }, 5000);
   };
 
   const getErrorMessage = (err) => {
     if (err.response && err.response.data) {
-      const { detail } = err.response.data;
-      return detail || "Failed to reset password. Please try again.";
+      const { new_password, token, message } = err.response.data;
+      if (new_password) {
+        return new_password[0];
+      } else if (token) {
+        return token[0];
+      } else if (message) {
+        return message;
+      }
     } else if (err.message === "Network Error") {
       return "Network error occurred. Please try again.";
-    } else {
-      return "Failed to reset password. Please try again.";
     }
+    return "Failed to reset password. Please try again.";
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email) {
-      handleAlert("error", "Email field is required");
+    if (!password || !rePassword) {
+      handleAlert("error", "Password fields are required");
+      return;
+    }
+
+    if (password !== rePassword) {
+      handleAlert("error", "Passwords do not match");
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      handleAlert(
+        "error",
+        "Password must contain at least 8 characters with one uppercase, lowercase, digits, and special character"
+      );
       return;
     }
 
     try {
-      await dispatch(resetPassword(email));
+      await dispatch(passwordResetConfirm(uid, token, password));
     } catch (err) {
       handleAlert("error", getErrorMessage(err));
+    }
+  };
+
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
+  };
+
+  const togglePasswordVisibility = (field) => {
+    if (field === "password") {
+      setShowPassword((prev) => !prev);
+    } else if (field === "rePassword") {
+      setShowRePassword((prev) => !prev);
     }
   };
 
@@ -172,7 +210,7 @@ const PasswordReset = () => {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Reset Password
+              Confirm Password Reset
             </Typography>
             <AlertComponent
               message={alertInfo.message}
@@ -191,14 +229,56 @@ const PasswordReset = () => {
                 margin="normal"
                 required
                 fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
+                name="password"
+                label="New Password"
+                type={showPassword ? "text" : "password"}
+                id="password"
+                autoComplete="new-password"
                 autoFocus
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 sx={{ mb: 2 }}
+                InputProps={{
+                  endAdornment: (
+                    <Button
+                      onClick={() => togglePasswordVisibility("password")}
+                      size="small"
+                    >
+                      {showPassword ? (
+                        <VisibilityIcon />
+                      ) : (
+                        <VisibilityOffIcon />
+                      )}
+                    </Button>
+                  ),
+                }}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="rePassword"
+                label="Confirm Password"
+                type={showRePassword ? "text" : "password"}
+                id="rePassword"
+                autoComplete="new-password"
+                value={rePassword}
+                onChange={(e) => setRePassword(e.target.value)}
+                sx={{ mb: 2 }}
+                InputProps={{
+                  endAdornment: (
+                    <Button
+                      onClick={() => togglePasswordVisibility("rePassword")}
+                      size="small"
+                    >
+                      {showRePassword ? (
+                        <VisibilityIcon />
+                      ) : (
+                        <VisibilityOffIcon />
+                      )}
+                    </Button>
+                  ),
+                }}
               />
               <Button
                 type="submit"
@@ -207,7 +287,7 @@ const PasswordReset = () => {
                 sx={{ mt: 3, mb: 2 }}
                 disabled={loading}
               >
-                {loading ? <CircularProgress size={24} /> : "Reset Password"}
+                {loading ? <CircularProgress size={24} /> : "Confirm Password"}
               </Button>
               <Grid container>
                 <Grid item xs>
@@ -229,4 +309,4 @@ const PasswordReset = () => {
   );
 };
 
-export default PasswordReset;
+export default PasswordResetConfirm;

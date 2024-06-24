@@ -23,6 +23,10 @@ export const PASSWORD_RESET_REQUEST = 'PASSWORD_RESET_REQUEST';
 export const PASSWORD_RESET_SUCCESS = 'PASSWORD_RESET_SUCCESS';
 export const PASSWORD_RESET_FAILURE = 'PASSWORD_RESET_FAILURE';
 
+export const PASSWORD_RESET_CONFIRM_REQUEST = 'PASSWORD_RESET_CONFIRM_REQUEST';
+export const PASSWORD_RESET_CONFIRM_SUCCESS = 'PASSWORD_RESET_CONFIRM_SUCCESS';
+export const PASSWORD_RESET_CONFIRM_FAILURE = 'PASSWORD_RESET_CONFIRM_FAILURE';
+
 
 // Redux login actions
 const loginRequest = () => ({
@@ -163,5 +167,45 @@ export const resetPassword = (email) => async (dispatch) => {
   } catch (error) {
     const errorMsg = error.response && error.response.data ? error.response.data.detail : error.message;
     dispatch(passwordResetFailure(errorMsg));
+  }
+};
+
+
+// Action creators
+const passwordResetConfirmRequest = () => ({
+  type: PASSWORD_RESET_CONFIRM_REQUEST,
+});
+
+const passwordResetConfirmSuccess = () => ({
+  type: PASSWORD_RESET_CONFIRM_SUCCESS,
+});
+
+const passwordResetConfirmFailure = (error) => ({
+  type: PASSWORD_RESET_CONFIRM_FAILURE,
+  payload: error,
+});
+
+// Async action to reset password confirmation
+export const passwordResetConfirm = (uid, token, new_password) => async (dispatch) => {
+  dispatch(passwordResetConfirmRequest());
+  
+  try {
+    await axios.post(`${base_url}accounts/users/reset_password_confirm/`, { uid, token, new_password });
+    dispatch(passwordResetConfirmSuccess());
+  } catch (error) {
+    if (error.response && error.response.data) {
+      // Handling validation errors from backend
+      const { new_password: newPasswordErrors } = error.response.data;
+      if (newPasswordErrors && newPasswordErrors.length > 0) {
+        const errorMessage = newPasswordErrors[0];
+        dispatch(passwordResetConfirmFailure(errorMessage));
+      } else {
+        const errorMsg = error.response.data.detail || error.message;
+        dispatch(passwordResetConfirmFailure(errorMsg));
+      }
+    } else {
+      const errorMsg = error.message || 'Failed to reset password. Please try again.';
+      dispatch(passwordResetConfirmFailure(errorMsg));
+    }
   }
 };
