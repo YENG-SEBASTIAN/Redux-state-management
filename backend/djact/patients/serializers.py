@@ -7,12 +7,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('patient_id',)
 
+
 class PatientProfileSerializer(serializers.ModelSerializer):
-    patient = RegistrationSerializer()
 
     class Meta:
         model = PatientProfile
-        fields = '__all__'
+        fields = "__all__"
+
+
 
 class MedicalHistorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,3 +35,4 @@ class VitalsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vitals
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at']

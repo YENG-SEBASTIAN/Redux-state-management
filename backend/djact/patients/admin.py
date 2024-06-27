@@ -33,7 +33,7 @@ class MedicationAdmin(admin.ModelAdmin):
 
 @admin.register(Vitals)
 class VitalsAdmin(admin.ModelAdmin):
-    list_display = ('patient', 'date_recorded', 'temperature', 'blood_pressure', 'heart_rate', 'respiratory_rate')
+    list_display = ('patient', 'date_recorded', 'temperature', 'blood_pressure', 'heart_rate', 'respiratory_rate', 'created_by')
     search_fields = ('patient__first_name', 'patient__last_name', 'date_recorded')
     list_filter = ('date_recorded',)
 

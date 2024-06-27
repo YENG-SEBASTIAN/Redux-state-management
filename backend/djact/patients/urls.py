@@ -11,7 +11,7 @@ from patients.views import (
 urlpatterns = [
     # Registration URLs
     path('registrations/', RegistrationListCreateAPIView.as_view(), name='registration-list'),
-    path('registrations/<str:patient_id>/', RegistrationDetailAPIView.as_view(), name='registration-detail'),
+    path('registrations/<str:pk>/', RegistrationDetailAPIView.as_view(), name='registration-detail'),
 
     # PatientProfile URLs
     path('profiles/', PatientProfileListCreateAPIView.as_view(), name='patientprofile-list'),

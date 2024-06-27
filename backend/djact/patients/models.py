@@ -2,7 +2,9 @@ from django.db import models
 from accounts.models import User
 from django.utils.crypto import get_random_string
 import string
+from django.utils.translation import gettext_lazy as _
 from encrypted_model_fields.fields import EncryptedTextField, EncryptedCharField
+from accounts.models import User
 
 
 class Registration(models.Model):
@@ -33,20 +35,20 @@ class Registration(models.Model):
 
 class PatientProfile(models.Model):
     GENDER_CHOICES = [
-        ('male', 'Male'),
-        ('female', 'Female'),
-        ('other', 'Other'),
+        ('male', _('Male')),
+        ('female', _('Female')),
+        ('other', _('Other')),
     ]
 
     MARITAL_STATUS_CHOICES = [
-        ('single', 'Single'),
-        ('married', 'Married'),
-        ('divorced', 'Divorced'),
-        ('widowed', 'Widowed'),
-        ('other', 'Other'),
+        ('single', _('Single')),
+        ('married', _('Married')),
+        ('divorced', _('Divorced')),
+        ('widowed', _('Widowed')),
+        ('other', _('Other')),
     ]
 
-    patient = models.OneToOneField(Registration, on_delete=models.CASCADE, related_name='profile')
+    patient = models.ForeignKey(Registration, on_delete=models.CASCADE, related_name='profile')
     address = models.CharField(max_length=200)
     phone_number = models.CharField(max_length=15)
     date_of_birth = models.DateField()
@@ -57,15 +59,15 @@ class PatientProfile(models.Model):
     marital_status = models.CharField(max_length=15, choices=MARITAL_STATUS_CHOICES)
     insurance_provider = models.CharField(max_length=100)
     insurance_number = models.CharField(max_length=50)
-
+    
     def __str__(self):
         return f"{self.patient.first_name} {self.patient.last_name}"
 
 class MedicalHistory(models.Model):
     CONDITION_STATUS_CHOICES = [
-        ('active', 'Active'),
-        ('inactive', 'Inactive'),
-        ('resolved', 'Resolved'),
+        ('active', _('Active')),
+        ('inactive', _('Inactive')),
+        ('resolved', _('Resolved')),
     ]
 
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='medical_histories')
@@ -79,9 +81,9 @@ class MedicalHistory(models.Model):
 
 class Allergy(models.Model):
     SEVERITY_CHOICES = [
-        ('mild', 'Mild'),
-        ('moderate', 'Moderate'),
-        ('severe', 'Severe'),
+        ('mild', _('Mild')),
+        ('moderate', _('Moderate')),
+        ('severe', _('Severe')),
     ]
 
     patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='allergies')
@@ -107,11 +109,14 @@ class Medication(models.Model):
 
 class Vitals(models.Model):
     patient = models.ForeignKey(Registration, on_delete=models.CASCADE, related_name='vitals')
-    date_recorded = models.DateField()
+    date_recorded = models.DateTimeField(auto_now_add=True)  # Automatically set on creation
     temperature = models.DecimalField(max_digits=4, decimal_places=1)
     blood_pressure = models.CharField(max_length=7)
     heart_rate = models.IntegerField()
     respiratory_rate = models.IntegerField()
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)  # Automatically set on creation
+    updated_at = models.DateTimeField(auto_now=True)  # Automatically updated on every save
 
     def __str__(self):
         return f"Vitals on {self.date_recorded} for {self.patient.first_name} {self.patient.last_name}"
