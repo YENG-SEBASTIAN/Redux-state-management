@@ -19,6 +19,10 @@ from django.urls import path, include
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from djact.views import (
+    PermissionListAPIView, GroupListAPIView, GroupDetailAPIView,
+    AssignPermissionsToGroupAPIView, RemovePermissionsFromGroupAPIView
+)
 
 
 schema_view = get_schema_view(
@@ -36,6 +40,11 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('permissions/', PermissionListAPIView.as_view(), name='permission-list'),
+    path('groups/', GroupListAPIView.as_view(), name='group-list'),
+    path('groups/<int:pk>/', GroupDetailAPIView.as_view(), name='group-detail'),
+    path('groups/<int:group_id>/add_permissions/', AssignPermissionsToGroupAPIView.as_view(), name='assign-permissions'),
+    path('groups/<int:group_id>/remove_permissions/', RemovePermissionsFromGroupAPIView.as_view(), name='remove-permissions'),
     path('accounts/', include('djoser.urls')),
     path('accounts/', include('djoser.urls.jwt')),
     path('patients/', include('patients.urls')),
