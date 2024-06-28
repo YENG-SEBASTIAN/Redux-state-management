@@ -138,7 +138,10 @@ const Login = () => {
                       <div className="mt-4">
                         <button className="btn btn-success w-100" type="submit" disabled={loading}>
                           {loading ? (
-                            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <button className="btn btn-success w-100" type="button" disabled>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Signing In...
+                          </button>
                           ) : (
                             'Sign In'
                           )}
