@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import AlertMessage from '../basicUIs/AlertMessage';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { signup } from '../../actions/authActions';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +14,9 @@ const SignUp = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertType, setAlertType] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
+  const [loading, setLoading] = useState(false); // New loading state
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -22,9 +28,9 @@ const SignUp = () => {
     return regex.test(password);
   };
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    
+
     if (!validateEmail(email)) {
       setAlertType('danger');
       setAlertMessage('Please enter a valid email address.');
@@ -53,18 +59,25 @@ const SignUp = () => {
       return;
     }
 
-    // All validations passed - simulate signup success
-    setAlertType('success');
-    setAlertMessage('Signup successful!');
-    setShowAlert(true);
+    // Start loading
+    setLoading(true);
 
-    // You can add your signup logic here (e.g., API call)
-    console.log('Email:', email);
-    console.log('Username:', username);
-    console.log('Password:', password);
-    console.log('Confirm Password:', confirmPassword);
+    try {
+      await dispatch(signup(email, username, password, confirmPassword));
+      setAlertType('success');
+      setAlertMessage('Signup successful! Please check your email to activate your account.');
+      setShowAlert(true);
+      setTimeout(() => navigate('/'), 2000); // Navigate to login page after 2 seconds
+    } catch (error) {
+      setAlertType('danger');
+      setAlertMessage(error.message || 'An error occurred during signup.');
+      setShowAlert(true);
+    } finally {
+      // Stop loading
+      setLoading(false);
+    }
 
-    // Clear form fields after successful signup
+    // Clear form fields after signup attempt
     setEmail('');
     setUsername('');
     setPassword('');
@@ -194,9 +207,16 @@ const SignUp = () => {
                       </div>
 
                       <div className="mt-4">
-                        <button className="btn btn-success w-100" type="submit">
-                          Sign Up
-                        </button>
+                        {loading ? (
+                          <button className="btn btn-success w-100" type="button" disabled>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Signing Up...
+                          </button>
+                        ) : (
+                          <button className="btn btn-success w-100" type="submit">
+                            Sign Up
+                          </button>
+                        )}
                       </div>
 
                     </form>
@@ -217,9 +237,8 @@ const SignUp = () => {
         </div>
       </div>
 
-        {/* display all alert messages */}
+      {/* Display all alert messages */}
       <AlertMessage type={alertType} message={alertMessage} show={showAlert} onClose={() => setShowAlert(false)} />
-
     </div>
   );
 };

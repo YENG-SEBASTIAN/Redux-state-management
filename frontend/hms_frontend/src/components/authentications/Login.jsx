@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import AlertMessage from '../basicUIs/AlertMessage';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { login } from '../../actions/authActions';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,7 +24,6 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Check if email or password is empty
     if (!email.trim() || !password.trim()) {
       setAlertType('danger');
       setAlertMessage('Please fill in all fields.');
@@ -32,7 +31,6 @@ const Login = () => {
       return;
     }
 
-    // Check password strength
     if (!validatePassword(password)) {
       setAlertType('danger');
       setAlertMessage('Password must be at least 8 characters long and contain uppercase letters, lowercase letters, numbers, and special characters.');
@@ -45,19 +43,17 @@ const Login = () => {
     try {
       const response = await dispatch(login(email, password));
 
-      if (response.token) {
+      if (response.access) {
         setAlertType('success');
         setAlertMessage('Login successful!');
         setShowAlert(true);
-
-        // Redirect to dashboard
         navigate('/dashboard');
       } else {
         throw new Error('Login failed. No token received.');
       }
-    } catch (err) {
+    } catch (error) {
       setAlertType('danger');
-      setAlertMessage(err.message || 'An error occurred during login.');
+      setAlertMessage(error.message || 'An error occurred during login.');
       setShowAlert(true);
     } finally {
       setLoading(false);

@@ -58,9 +58,12 @@ export const login = (email, password) => async (dispatch) => {
     const token = response.data.access;
     localStorage.setItem('token', token);
     dispatch(loginSuccess(token));
-    await dispatch(loadUser(token)); // Call loadUser after successful login
+    await dispatch(loadUser(token));
+    return response.data;
   } catch (error) {
-    dispatch(loginFailure(error.message));
+    const errorMsg = error.response && error.response.data ? error.response.data.detail : error.message;
+    dispatch(loginFailure(errorMsg));
+    throw new Error(errorMsg);
   }
 };
 
@@ -84,8 +87,12 @@ export const signup = (email, username, password, re_password) => async (dispatc
     await axios.post(`${base_url}accounts/users/`, { email, username, password, re_password });
     dispatch(signupSuccess());
   } catch (error) {
-    dispatch(signupFailure(error.message));
-    throw error;
+    let errorMessage = 'An error occurred during signup.';
+    if (error.response && error.response.data) {
+      errorMessage = error.response.data.username || error.response.data.email || error.response.data.password || errorMessage;
+    }
+    dispatch(signupFailure(errorMessage));
+    throw new Error(errorMessage);
   }
 };
 
