@@ -4,6 +4,7 @@ import AlertMessage from '../basicUIs/AlertMessage';
 import { useDispatch } from 'react-redux';
 import { login } from '../../actions/authActions';
 import { useNavigate } from 'react-router-dom';
+import withAuthRedirect from './withAuthRedirect';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -170,4 +171,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default withAuthRedirect(Login);
