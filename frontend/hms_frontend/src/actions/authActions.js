@@ -209,26 +209,19 @@ const passwordResetConfirmFailure = (error) => ({
 });
 
 // Async action to reset password confirmation
-export const passwordResetConfirm = (uid, token, new_password) => async (dispatch) => {
+export const passwordResetConfirm = (uid, token, newPassword) => async (dispatch) => {
   dispatch(passwordResetConfirmRequest());
   
   try {
-    await axios.post(`${base_url}accounts/users/reset_password_confirm/`, { uid, token, new_password });
+    const response = await axios.post(`${base_url}accounts/users/reset_password_confirm/`, { uid, token, new_password: newPassword });
     dispatch(passwordResetConfirmSuccess());
+    return response.data;
   } catch (error) {
+    let errorMsg = "Invalid token";
     if (error.response && error.response.data) {
-      // Handling validation errors from backend
-      const { new_password: newPasswordErrors } = error.response.data;
-      if (newPasswordErrors && newPasswordErrors.length > 0) {
-        const errorMessage = newPasswordErrors[0];
-        dispatch(passwordResetConfirmFailure(errorMessage));
-      } else {
-        const errorMsg = error.response.data.detail || error.message;
-        dispatch(passwordResetConfirmFailure(errorMsg));
-      }
-    } else {
-      const errorMsg = error.message || 'Failed to reset password. Please try again.';
-      dispatch(passwordResetConfirmFailure(errorMsg));
+      errorMsg = error.response.data.uid || error.response.data.token || error.response.data.detail || errorMsg;
     }
+    dispatch(passwordResetConfirmFailure(errorMsg));
+    throw new Error(errorMsg);
   }
 };
