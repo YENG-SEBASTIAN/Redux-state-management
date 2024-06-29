@@ -180,11 +180,16 @@ const passwordResetFailure = (error) => ({
 export const resetPassword = (email) => async (dispatch) => {
   dispatch(passwordResetRequest());
   try {
-    await axios.post(`${base_url}accounts/users/reset_password/`, { email });
+    const response = await axios.post(`${base_url}accounts/users/reset_password/`, { email });
     dispatch(passwordResetSuccess());
+    return response.data;
   } catch (error) {
-    const errorMsg = error.response && error.response.data ? error.response.data.detail : error.message;
+    let errorMsg = 'An unexpected error occurred';
+    if (error.response && error.response.data) {
+      errorMsg = error.response.data.email || error.response.data.detail || errorMsg;
+    }
     dispatch(passwordResetFailure(errorMsg));
+    throw new Error(errorMsg); // Optionally, rethrow the error to handle it further up the chain
   }
 };
 

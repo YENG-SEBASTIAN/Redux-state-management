@@ -5,6 +5,9 @@ import { useDispatch } from 'react-redux';
 import { login } from '../../actions/authActions';
 import { useNavigate } from 'react-router-dom';
 import withAuthRedirect from './withAuthRedirect';
+import AuthFooter from './AuthFooter';
+
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -114,7 +117,7 @@ const Login = () => {
 
                       <div className="mb-3 text-start">
                         <div className="float-end">
-                          <a href="#" className="text-muted">Forgot password?</a>
+                          <a href="/reset-password" className="text-muted">Forgot password?</a>
                         </div>
                         <label className="form-label" htmlFor="password-input">Password</label>
                         <div className="position-relative auth-pass-inputgroup mb-3">
@@ -160,6 +163,9 @@ const Login = () => {
           </div>
         </div>
       </div>
+
+      {/* Footer Component */}
+      <AuthFooter />
 
       <AlertMessage
         type={alertType}

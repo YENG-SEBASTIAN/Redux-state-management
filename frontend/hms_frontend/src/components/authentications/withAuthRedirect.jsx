@@ -12,7 +12,7 @@ const withAuthRedirect = (WrappedComponent) => {
 
     useEffect(() => {
       if (token) {
-        setAlertType('info');
+        setAlertType('warning');
         setAlertMessage('You are already logged in');
         setShowAlert(true);
 

@@ -4,6 +4,7 @@ import AlertMessage from '../basicUIs/AlertMessage';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { signup } from '../../actions/authActions';
+import AuthFooter from './AuthFooter';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -236,6 +237,10 @@ const SignUp = () => {
           </div>
         </div>
       </div>
+
+
+      {/* Footer Component */}
+      <AuthFooter />
 
       {/* Display all alert messages */}
       <AlertMessage type={alertType} message={alertMessage} show={showAlert} onClose={() => setShowAlert(false)} />
