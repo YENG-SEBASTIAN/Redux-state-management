@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { passwordResetConfirm } from '../../actions/authActions';
-import 'feather-icons';
 import AlertMessage from '../basicUIs/AlertMessage';
 import AuthFooter from './AuthFooter';
 
@@ -16,16 +15,14 @@ const PasswordResetConfirm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
-    setShowPassword((prevShowPassword) => !prevShowPassword);
+    setShowPassword(prevShowPassword => !prevShowPassword);
   };
 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -44,37 +41,33 @@ const PasswordResetConfirm = () => {
       return;
     }
 
+    setLoading(true);
     try {
-        dispatch(passwordResetConfirm(uid, token, password));
-        setAlertType('success');
-        setAlertMessage('Password reset successful! Redirecting to login...');
-        setShowAlert(true);
-        setLoading(false);
-        setTimeout(() => {
-          navigate('/');
-        }, 2000);
+      await dispatch(passwordResetConfirm(uid, token, password));
+      setAlertType('success');
+      setAlertMessage('Password reset successful! Redirecting to login...');
+      setShowAlert(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
     } catch (error) {
-        let errorMsg = 'Password reset failed. Please try again.';
-        if (error?.response && error?.response?.data) {
-          errorMsg = error.response.data.uid || error.response.data.token || error.response.data.detail;
-        }
-        setAlertType('danger');
-        setAlertMessage(errorMsg);
-        setShowAlert(true);
-        setLoading(false);
+      let errorMsg = 'Password reset failed. Please try again.';
+      if (error?.response?.data) {
+        errorMsg = error.response.data.uid || error.response.data.token || error.response.data.detail || errorMsg;
+      }
+      setAlertType('danger');
+      setAlertMessage(errorMsg);
+      setShowAlert(true);
+    } finally {
+      setLoading(false);
     }
-    
   };
 
   return (
     <div className="auth-page-wrapper pt-5">
       <div className="auth-one-bg-position auth-one-bg" id="auth-particles">
         <div className="bg-overlay"></div>
-        <div className="shape">
-          <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 1440 120">
-            <path d="M 0,36 C 144,53.6 432,123.2 720,124 C 1008,124.8 1296,56.8 1440,40L1440 140L0 140z"></path>
-          </svg>
-        </div>
+        {/* Add your particle effect or background elements here */}
       </div>
 
       <div className="auth-page-content">
@@ -131,7 +124,7 @@ const PasswordResetConfirm = () => {
                         <div className="position-relative auth-pass-inputgroup mb-3">
                           <input
                             type={showPassword ? "text" : "password"}
-                            className="form-control pe-5 password-input"
+                            className="form-control pe-5 password-input border-1"
                             placeholder="Confirm password"
                             id="confirm-password-input"
                             value={confirmPassword}
