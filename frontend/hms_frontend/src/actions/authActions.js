@@ -112,14 +112,25 @@ export const activateAccountFailure = (error) => ({
 
 export const activateAccount = (uid, token) => async (dispatch) => {
   dispatch(activateAccountRequest());
+  
   try {
-    await axios.post(`${base_url}accounts/users/activation/`, { uid, token });
-    dispatch(activateAccountSuccess());
+    const response = await axios.post(`${base_url}accounts/users/activation/`, { uid, token });
+    dispatch(activateAccountSuccess(response.data));
+    return response.data;
   } catch (error) {
-    const errorMsg = error.response && error.response.data ? error.response.data.detail : error.message;
+    let errorMsg = 'Failed to activate account. Please try again.';
+
+    if (error.response && error.response.data) {
+      errorMsg = error.response.data.uid || error.response.data.token;
+    } else {
+      errorMsg = error.response.data.detail;
+    }
+
     dispatch(activateAccountFailure(errorMsg));
+    throw new Error(errorMsg);
   }
 };
+
 
 // Load user action
 export const loadUser = (token) => async (dispatch) => {
