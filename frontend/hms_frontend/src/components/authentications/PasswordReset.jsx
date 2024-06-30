@@ -83,7 +83,7 @@ const PasswordReset = () => {
                 <div className="card-body p-4">
                   <div className="text-center mt-2">
                     <h5 className="text-primary">Forgot Password?</h5>
-                    <p className="text-muted">Reset password with Velzon</p>
+                    <p className="text-muted">Reset password with eHealth Portal</p>
                     <lord-icon
                       src="https://cdn.lordicon.com/rhvddzym.json"
                       trigger="loop"
