@@ -23,20 +23,20 @@ if __name__ == '__main__':
 
 
 
-# import pytest
+import pytest
 
-# def add(a, b):
-#     return a + b
+def add(a, b):
+    return a + b
 
-# def test_add_integers():
-#     assert add(1, 2) == 3
-#     assert add(-1, 1) == 0
-#     assert add(-1, -1) == -2
+def test_add_integers():
+    assert add(1, 2) == 3
+    assert add(-1, 1) == 0
+    assert add(-1, -1) == -2
 
-# def test_add_floats():
-#     assert add(1.1, 2.2) == 3.3
-#     assert add(-1.1, 1.1) == 0.0
-#     assert add(-1.1, -1.1) == -2.2
+def test_add_floats():
+    assert add(1.1, 2.2) == 3.3
+    assert add(-1.1, 1.1) == 0.0
+    assert add(-1.1, -1.1) == -2.2
 
-# def test_add_strings():
-#     assert add('hello', ' world') == 'hello world'
+def test_add_strings():
+    assert add('hello', ' world') == 'hello world'
